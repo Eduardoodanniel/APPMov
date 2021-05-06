@@ -28,7 +28,6 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Ingreso datos", Toast.LENGTH_SHORT).show();
             Intent agregar = new Intent(this,Home.class);
             startActivity(agregar);
-
         }
     }
 
@@ -50,7 +49,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return true;
-
     }
 
 
