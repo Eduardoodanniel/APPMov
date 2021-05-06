@@ -2,6 +2,7 @@ package com.example.geo;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -25,7 +26,8 @@ public class MainActivity extends AppCompatActivity {
 
         if (validar()){
             Toast.makeText(this, "Ingreso datos", Toast.LENGTH_SHORT).show();
-
+            Intent agregar = new Intent(this,Home.class);
+            startActivity(agregar);
 
         }
     }
@@ -48,5 +50,10 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return true;
+
     }
+
+
+
+
 }
