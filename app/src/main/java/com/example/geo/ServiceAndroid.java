@@ -21,14 +21,16 @@ public class ServiceAndroid extends Service {
     public int onStartCommand(Intent intent, int flag, int idProcess){
         System.out.println("inicio el servicio");
 
+
             final Handler handler= new Handler();
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     System.out.println("imprimiendo");
-                    handler.postDelayed(this,2000);//se ejecutara cada 2 segundos
+                    handler.postDelayed(this,3000);//se ejecutara cada 2 segundos
                 }
             },5000);//empezara a ejecutarse después de 5 segundos
+
 
 
 

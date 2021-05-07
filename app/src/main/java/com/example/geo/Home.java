@@ -39,13 +39,13 @@ public class Home extends AppCompatActivity {
         //inicia el servicio
         startService(new Intent(this, ServiceAndroid.class));
 
-        localizacion();
+        //localizacion();
         //listaProvider();
         //mejorCriterio();
         // estadoGPS();
-        registrarLocalizacion();
-        deviceInfo();
-        getMemory();
+        //registrarLocalizacion();
+        //deviceInfo();
+        //getMemory();
     }
 
     private LocationManager ubicacion;
