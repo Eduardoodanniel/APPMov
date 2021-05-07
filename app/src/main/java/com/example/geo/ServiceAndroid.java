@@ -31,9 +31,6 @@ public class ServiceAndroid extends Service {
                 }
             },5000);//empezara a ejecutarse después de 5 segundos
 
-
-
-
         return START_STICKY;
     }
 

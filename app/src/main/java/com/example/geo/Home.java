@@ -33,20 +33,38 @@ public class Home extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-
-
-
         //inicia el servicio
         startService(new Intent(this, ServiceAndroid.class));
 
-        //localizacion();
-        //listaProvider();
-        //mejorCriterio();
-        // estadoGPS();
-        //registrarLocalizacion();
-        //deviceInfo();
-        //getMemory();
+        /*
+        localizacion();
+        listaProvider();
+        mejorCriterio();
+        estadoGPS();
+        registrarLocalizacion();
+        deviceInfo();
+        getMemory();
+        */
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     private LocationManager ubicacion;
     TextView longitud, latitud, textView;
@@ -107,7 +125,6 @@ public class Home extends AppCompatActivity {
         return lastValue;
     }
 
-
     private void localizacion() {
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -157,8 +174,6 @@ public class Home extends AppCompatActivity {
         return true;
     }
 
-
-
     private void registrarLocalizacion(){
         ubicacion = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -195,9 +210,4 @@ public class Home extends AppCompatActivity {
 
         }
     }
-
-
-
-
-
 }
