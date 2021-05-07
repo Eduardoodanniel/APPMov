@@ -3,12 +3,18 @@ package com.example.geo;
 import android.app.Service;
 import android.content.Intent;
 import android.media.MediaPlayer;
+import android.os.Handler;
 import android.os.IBinder;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
 public class ServiceAndroid extends Service {
+
+    private Handler gps = new Handler();
+
+
+
 
     MediaPlayer md;
 
@@ -23,6 +29,7 @@ public class ServiceAndroid extends Service {
     public int onStartCommand(Intent intent, int flag, int idProcess){
         md.start();
         System.out.println("inicio el servicio");
+        gps.postDelayed(this.onStartCommand(), 1000);
         return START_STICKY;
     }
 

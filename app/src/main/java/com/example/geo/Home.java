@@ -33,6 +33,9 @@ public class Home extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+
+
+
         //inicia el servicio
         startService(new Intent(this, ServiceAndroid.class));
 
@@ -44,11 +47,11 @@ public class Home extends AppCompatActivity {
         deviceInfo();
         getMemory();
     }
+
     private LocationManager ubicacion;
     TextView longitud, latitud, textView;
     Build build;
     String information;
-
 
 
     private void deviceInfo() {
@@ -116,10 +119,12 @@ public class Home extends AppCompatActivity {
         latitud = (TextView) findViewById(R.id.txtLatitud);
         ubicacion = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         Location loc = ubicacion.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-          /*  if (ubicacion != null) {
-                Log.d("Latitud", String.valueOf(loc.getLatitude()));
-                Log.d("Longitud", String.valueOf(loc.getLongitude()));
-            } */
+          if (ubicacion != null) {
+              System.out.println("Se requiere acceso a tu ubicacion");
+
+               // Log.d("Latitud", String.valueOf(loc.getLatitude()));
+                // Log.d("Longitud", String.valueOf(loc.getLongitude()));
+            }
     }
 
     private void listaProvider() {
