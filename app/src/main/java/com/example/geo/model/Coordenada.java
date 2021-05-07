@@ -3,7 +3,7 @@ package com.example.geo.model;
 import java.util.Date;
 
 public class Coordenada {
-    
+
     private Long id;
     private Usuario usuario;
     private double latitud;

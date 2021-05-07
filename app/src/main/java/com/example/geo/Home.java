@@ -17,34 +17,72 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
 
+import com.example.geo.model.Telefono;
+import com.example.geo.model.Usuario;
+import com.example.geo.serviceInterface.TelefonoService;
+import com.example.geo.utils.Api;
+
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.text.DecimalFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class Home extends AppCompatActivity {
 
+    Telefono telefono = new Telefono();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        //envia datos del telefono
+        enviarDatosTelefono();
+
         //inicia el servicio
-        startService(new Intent(this, ServiceAndroid.class));
+        //startService(new Intent(this, ServiceAndroid.class));
+    }
 
-        /*
-        localizacion();
-        listaProvider();
-        mejorCriterio();
-        estadoGPS();
-        registrarLocalizacion();
-        deviceInfo();
-        getMemory();
-        */
+    TelefonoService telefonoServiceI;
+
+    private void guardarDatosTelefono()
+    {
+        Build build = new Build();
+        telefono.setModelo(build.BRAND + " " + build.MODEL);
+        telefono.setUsuario(new Usuario(1L));//obtener el id del usuario
+    }
+
+
+    private void enviarDatosTelefono(){
+        guardarDatosTelefono();
+        telefonoServiceI = Api.apiTelefono();
+        Call<Boolean> call = telefonoServiceI.enviarDatosTelefono(telefono);
+        call.enqueue(new Callback<Boolean>() {
+            @Override
+            public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+                if (response != null){
+                    if (response.code() == 201){
+                        System.out.println("respusta correcta");
+                    }else{
+                        System.out.println("estado: " + response.code());
+                    }
+                }else{
+                    System.out.println("Ocurrio un error");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Boolean> call, Throwable t) {
+                System.out.println( "exeption: "+t.getMessage());
+            }
+        });
     }
 
 
@@ -57,31 +95,7 @@ public class Home extends AppCompatActivity {
 
 
 
-
-
-
-
-
-
-
-
-
-    private LocationManager ubicacion;
-    TextView longitud, latitud, textView;
-    Build build;
-    String information;
-
-
-    private void deviceInfo() {
-        information = "PRODUCTO: " + build.PRODUCT + "\n" +
-                "BRAND: " + build.BRAND + "\n" +
-                "HARDWARE: " + build.HARDWARE + "\n" +
-                "DISPOSITIVO: " + build.DEVICE + "\n" +
-                "MODELO: " + build.MODEL + "\n" +
-                "HARDWARE: " + build.HARDWARE + "\n";
-
-    }
-
+    //debe retornar un double
     public String getMemory() {
 
         RandomAccessFile reader;
@@ -124,6 +138,9 @@ public class Home extends AppCompatActivity {
 
         return lastValue;
     }
+
+    private LocationManager ubicacion;
+    TextView longitud, latitud, textView;
 
     private void localizacion() {
 
