@@ -11,30 +11,26 @@ import androidx.annotation.Nullable;
 
 public class ServiceAndroid extends Service {
 
-    private Handler gps = new Handler();
-
-
-
-
-    MediaPlayer md;
-
     @Override
     public void onCreate(){
         super.onCreate();
         System.out.println("se creo el servicio");
-        md = MediaPlayer.create(this,R.raw.cancion);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flag, int idProcess){
-        md.start();
         System.out.println("inicio el servicio");
-        gps.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                System.out.println("Imprimiendo");
-            }
-        },5000);
+
+            final Handler handler= new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    System.out.println("imprimiendo");
+                    handler.postDelayed(this,2000);//se ejecutara cada 2 segundos
+                }
+            },5000);//empezara a ejecutarse después de 5 segundos
+
+
 
         return START_STICKY;
     }

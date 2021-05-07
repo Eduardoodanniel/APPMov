@@ -1,5 +1,6 @@
 package com.example.geo.serviceInterface;
 
+import com.example.geo.model.RespuestaLogin;
 import com.example.geo.model.Usuario;
 
 import java.util.Map;
@@ -14,5 +15,5 @@ public interface UsuarioService {
     //Call<Usuario> getUsuario();
 
     @POST("login")
-    Call< Map<String, Object> > enviarLogin(@Body Usuario usuario);
+    Call<RespuestaLogin> enviarLogin(@Body Usuario usuario);
 }
