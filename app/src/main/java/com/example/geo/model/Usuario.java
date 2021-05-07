@@ -10,6 +10,11 @@ public class Usuario {
 
     }
 
+    public Usuario(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
+
     public Usuario(Long idUsuario, String username, String password) {
         this.idUsuario = idUsuario;
         this.username = username;

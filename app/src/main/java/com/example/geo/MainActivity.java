@@ -10,22 +10,45 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
+import com.example.geo.model.Usuario;
+import com.example.geo.serviceInterface.UsuarioService;
+import com.example.geo.utils.Api;
 
-    EditText usuario,contraseña;
+import java.util.HashMap;
+import java.util.Map;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+public class MainActivity extends AppCompatActivity implements Callback<Map<String, Object>> {
+
+    EditText username, password;
+    UsuarioService usuarioServiceI;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        usuario = (EditText) findViewById(R.id.txi_usu);
-        contraseña = (EditText) findViewById(R.id.txi_pass);
+        username = (EditText) findViewById(R.id.txi_usu);
+        password = (EditText) findViewById(R.id.txi_pass);
+    }
+
+    public void enviarLogin(Usuario usuario){
+
+        usuarioServiceI = Api.getUsuarios();
+        Call<Map<String, Object>> call = usuarioServiceI.enviarLogin(usuario);
+        call.enqueue(this);
     }
 
 
     public void agregar(View V){
 
         if (validar()){
+
+            //Usuario user = new Usuario(username.getText().toString(), password.getText().toString());
+            //enviarLogin(user);
+
             Intent agregar = new Intent(this,Home.class);
             startActivity(agregar);
         }
@@ -35,20 +58,32 @@ public class MainActivity extends AppCompatActivity {
     public boolean validar (){
         boolean retorno = true;
 
-        String c1= usuario.getText().toString();
-        String c2= contraseña.getText().toString();
+        String c1= username.getText().toString();
+        String c2= password.getText().toString();
 
         if (c1.isEmpty()){
-            usuario.setError("Introduzca su usuario");
+            username.setError("Introduzca su usuario");
             retorno= false;
         }
         if (c2.isEmpty()){
-            contraseña.setError("Introduzca su contraseña");
+            password.setError("Introduzca su contraseña");
             retorno= false;
         }
-
         return retorno;
     }
 
 
+    @Override
+    public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
+        if (response.isSuccessful()){
+            System.out.println(response.body());
+            return;
+        }
+        System.out.println(" no se parseo body");
+    }
+
+    @Override
+    public void onFailure(Call<Map<String, Object>> call, Throwable t) {
+        System.out.println(t.getMessage());
+    }
 }
