@@ -49,8 +49,10 @@ public class MainActivity extends AppCompatActivity implements Callback<Respuest
 
     public void agregar(View V){
         if (validar()){
-            Usuario user = new Usuario(username.getText().toString(), password.getText().toString());
-            enviarLogin(user);
+            //Usuario user = new Usuario(username.getText().toString(), password.getText().toString());
+            //enviarLogin(user);
+            Intent agregar = new Intent(this,Home.class);
+            startActivity(agregar);
         }
     }
 
