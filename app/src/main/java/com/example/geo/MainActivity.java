@@ -3,18 +3,17 @@ package com.example.geo;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.media.MediaPlayer;
+
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
+
 
 import com.example.geo.model.Usuario;
 import com.example.geo.serviceInterface.UsuarioService;
 import com.example.geo.utils.Api;
 
-import java.util.HashMap;
+
 import java.util.Map;
 
 import retrofit2.Call;
@@ -26,12 +25,16 @@ public class MainActivity extends AppCompatActivity implements Callback<Map<Stri
     EditText username, password;
     UsuarioService usuarioServiceI;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         username = (EditText) findViewById(R.id.txi_usu);
         password = (EditText) findViewById(R.id.txi_pass);
+
+
+
     }
 
     public void enviarLogin(Usuario usuario){
@@ -86,4 +89,7 @@ public class MainActivity extends AppCompatActivity implements Callback<Map<Stri
     public void onFailure(Call<Map<String, Object>> call, Throwable t) {
         System.out.println(t.getMessage());
     }
+
+
 }
+
