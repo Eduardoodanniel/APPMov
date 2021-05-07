@@ -29,7 +29,13 @@ public class ServiceAndroid extends Service {
     public int onStartCommand(Intent intent, int flag, int idProcess){
         md.start();
         System.out.println("inicio el servicio");
-        gps.postDelayed(this.onStartCommand(), 1000);
+        gps.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("Imprimiendo");
+            }
+        },5000);
+
         return START_STICKY;
     }
 
