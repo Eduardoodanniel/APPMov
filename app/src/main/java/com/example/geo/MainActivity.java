@@ -13,7 +13,6 @@ import android.widget.Toast;
 public class MainActivity extends AppCompatActivity {
 
     EditText usuario,contraseña;
-    Button iniciar_sesion;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,24 +20,19 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         usuario = (EditText) findViewById(R.id.txi_usu);
         contraseña = (EditText) findViewById(R.id.txi_pass);
-        Toast.makeText(this,"entro",Toast.LENGTH_SHORT).show();
     }
 
 
     public void agregar(View V){
 
-        startService(new Intent(this, ServiceAndroid.class));
-
-        //if (validar()){
-          //  Toast.makeText(this, "Ingreso datos", Toast.LENGTH_SHORT).show();
-          //  Intent agregar = new Intent(this,Home.class);
-            //startActivity(agregar);
-        //}
+        if (validar()){
+            Intent agregar = new Intent(this,Home.class);
+            startActivity(agregar);
+        }
     }
 
 
     public boolean validar (){
-
         boolean retorno = true;
 
         String c1= usuario.getText().toString();
@@ -53,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
             retorno= false;
         }
 
-        return true;
+        return retorno;
     }
 
 
