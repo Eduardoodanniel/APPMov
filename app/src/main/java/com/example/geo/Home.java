@@ -78,10 +78,9 @@ public class Home extends AppCompatActivity {
 
 
     private void deviceInfo() {
-        information =
-                "BRAND: " + build.BRAND + "\n" +
-                "DISPOSITIVO: " + build.DEVICE + "\n" +
-                "MODELO: " + build.MODEL + "\n";
+        String version = Build.VERSION.RELEASE;
+        String device = Build.DEVICE;
+        String model = Build.MODEL;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
