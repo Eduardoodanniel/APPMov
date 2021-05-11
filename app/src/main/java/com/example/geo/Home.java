@@ -1,5 +1,6 @@
 package com.example.geo;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
@@ -14,6 +15,7 @@ import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.os.Build;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -24,14 +26,21 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static android.Manifest.permission.READ_PHONE_NUMBERS;
+import static android.Manifest.permission.READ_PHONE_STATE;
 
 
 public class Home extends AppCompatActivity {
 
+    private static final String READ_SMS = "";
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        textView = findViewById(R.id.phoneNumber);
+
 
         //inicia el servicio
         startService(new Intent(this, ServiceAndroid.class));
@@ -45,26 +54,22 @@ public class Home extends AppCompatActivity {
         deviceInfo();
         getMemory();
         */
+
+
+        if (ActivityCompat.checkSelfPermission(this, READ_SMS) == PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, READ_PHONE_NUMBERS) ==
+                        PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
+                READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
+            TelephonyManager tMgr = (TelephonyManager)   this.getSystemService(Context.TELEPHONY_SERVICE);
+            String mPhoneNumber = tMgr.getLine1Number();
+            textView.setText(mPhoneNumber);
+            return;
+        } else {
+            requestPermission();
+        }
+        
+        
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     private LocationManager ubicacion;
     TextView longitud, latitud, textView;
@@ -73,13 +78,32 @@ public class Home extends AppCompatActivity {
 
 
     private void deviceInfo() {
-        information = "PRODUCTO: " + build.PRODUCT + "\n" +
+        information =
                 "BRAND: " + build.BRAND + "\n" +
-                "HARDWARE: " + build.HARDWARE + "\n" +
                 "DISPOSITIVO: " + build.DEVICE + "\n" +
-                "MODELO: " + build.MODEL + "\n" +
-                "HARDWARE: " + build.HARDWARE + "\n";
+                "MODELO: " + build.MODEL + "\n";
+    }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private void requestPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(new String[]{READ_SMS, READ_PHONE_NUMBERS, READ_PHONE_STATE}, 100);
+        }
+    }
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case 100:
+                TelephonyManager tMgr = (TelephonyManager)  this.getSystemService(Context.TELEPHONY_SERVICE);
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) !=
+                        PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
+                        Manifest.permission.READ_PHONE_NUMBERS) != PackageManager.PERMISSION_GRANTED  &&
+                        ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) !=      PackageManager.PERMISSION_GRANTED) {
+                    return;
+                }
+                String mPhoneNumber = tMgr.getLine1Number();
+                textView.setText(mPhoneNumber);
+                break;
+        }
     }
 
     public String getMemory() {
