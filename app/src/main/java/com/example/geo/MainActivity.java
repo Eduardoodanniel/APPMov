@@ -73,19 +73,24 @@ public class MainActivity extends AppCompatActivity implements Callback<Respuest
         int resMsm = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_SMS);
         int resPhone1 = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_NUMBERS);
         int resPhone2 = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE);
+        int gps1 = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
+        int gps2 = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION);
 
-        if ( (resMsm == PackageManager.PERMISSION_GRANTED) || (resPhone1 == PackageManager.PERMISSION_GRANTED)  ||  (resPhone2 == PackageManager.PERMISSION_GRANTED) ){
+        if ( (resMsm == PackageManager.PERMISSION_GRANTED) || (resPhone1 == PackageManager.PERMISSION_GRANTED)  ||  (resPhone2 == PackageManager.PERMISSION_GRANTED) &&
+                (  (gps1 == PackageManager.PERMISSION_GRANTED)  &&  (gps2 == PackageManager.PERMISSION_GRANTED)  ))
+        {
             System.out.println("ya tiene permisos");
             return true;
         }else{
-            System.out.println("noooooooooooo tiene permisos");
+            System.out.println("no tiene permisos");
+            mensaje.setText("Debes aceptar los permisos");
             return false;
         }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void solicitarPermiso(){
-        requestPermissions(new String[]{Manifest.permission.READ_SMS, Manifest.permission.READ_PHONE_NUMBERS, Manifest.permission.READ_PHONE_STATE}, PERMISO_OK);
+        requestPermissions(new String[]{Manifest.permission.READ_SMS, Manifest.permission.READ_PHONE_NUMBERS, Manifest.permission.READ_PHONE_STATE, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISO_OK);
     }
 
 
@@ -130,4 +135,3 @@ public class MainActivity extends AppCompatActivity implements Callback<Respuest
 
 
 }
-
