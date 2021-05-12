@@ -69,9 +69,8 @@ public class Home extends AppCompatActivity {
     {
         Build build = new Build();
         telefono.setModelo(build.BRAND + " " + build.MODEL);
-        telefono.setUsuario(new Usuario(1L));//obtener el id del usuario
+        telefono.setIdUsuario(1L);
         telefono.setImei(GetIMEI());
-        telefono.setBateria(getBateria());
         //bateria
         //numero de telefono
 

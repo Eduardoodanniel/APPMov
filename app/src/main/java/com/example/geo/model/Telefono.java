@@ -5,32 +5,27 @@ import java.util.Date;
 public class Telefono {
 
     private Long id;
-    private Usuario usuario;
-    private String noTelefono;
+    private Long idUsuario;
     private String imei;
-    private double bateria;
+    private String noTelefono;
     private String modelo;
     private String versionAndroid;
-    private double almacenamientoTotal;
-    private double almacenamientoDisponible;
-    private double ram;
+    private String almacenamientoTotal;
+    private String ram;
     private Date fecha;
 
     public Telefono() {
     }
 
-    public Telefono(Long id, Usuario usuario, String noTelefono, String imei, double bateria, String modelo,
-                    String versionAndroid, double almacenamientoTotal, double almacenamientoDisponible, double ram,
-                    Date fecha) {
+    public Telefono(Long id, Long idUsuario, String imei, String noTelefono, String modelo, String versionAndroid,
+                    String almacenamientoTotal, String ram, Date fecha) {
         this.id = id;
-        this.usuario = usuario;
-        this.noTelefono = noTelefono;
+        this.idUsuario = idUsuario;
         this.imei = imei;
-        this.bateria = bateria;
+        this.noTelefono = noTelefono;
         this.modelo = modelo;
         this.versionAndroid = versionAndroid;
         this.almacenamientoTotal = almacenamientoTotal;
-        this.almacenamientoDisponible = almacenamientoDisponible;
         this.ram = ram;
         this.fecha = fecha;
     }
@@ -43,20 +38,12 @@ public class Telefono {
         this.id = id;
     }
 
-    public Usuario getUsuario() {
-        return usuario;
+    public Long getIdUsuario() {
+        return idUsuario;
     }
 
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
-    }
-
-    public String getNoTelefono() {
-        return noTelefono;
-    }
-
-    public void setNoTelefono(String noTelefono) {
-        this.noTelefono = noTelefono;
+    public void setIdUsuario(Long idUsuario) {
+        this.idUsuario = idUsuario;
     }
 
     public String getImei() {
@@ -67,12 +54,12 @@ public class Telefono {
         this.imei = imei;
     }
 
-    public double getBateria() {
-        return bateria;
+    public String getNoTelefono() {
+        return noTelefono;
     }
 
-    public void setBateria(double bateria) {
-        this.bateria = bateria;
+    public void setNoTelefono(String noTelefono) {
+        this.noTelefono = noTelefono;
     }
 
     public String getModelo() {
@@ -91,27 +78,19 @@ public class Telefono {
         this.versionAndroid = versionAndroid;
     }
 
-    public double getAlmacenamientoTotal() {
+    public String getAlmacenamientoTotal() {
         return almacenamientoTotal;
     }
 
-    public void setAlmacenamientoTotal(double almacenamientoTotal) {
+    public void setAlmacenamientoTotal(String almacenamientoTotal) {
         this.almacenamientoTotal = almacenamientoTotal;
     }
 
-    public double getAlmacenamientoDisponible() {
-        return almacenamientoDisponible;
-    }
-
-    public void setAlmacenamientoDisponible(double almacenamientoDisponible) {
-        this.almacenamientoDisponible = almacenamientoDisponible;
-    }
-
-    public double getRam() {
+    public String getRam() {
         return ram;
     }
 
-    public void setRam(double ram) {
+    public void setRam(String ram) {
         this.ram = ram;
     }
 

@@ -5,7 +5,9 @@ import java.util.Date;
 public class Coordenada {
 
     private Long id;
-    private Usuario usuario;
+    private String imei;
+    private String bateria;
+    private String almacenamientoDisponible;
     private double latitud;
     private double longitud;
     private Date fecha;
@@ -13,9 +15,12 @@ public class Coordenada {
     public Coordenada() {
     }
 
-    public Coordenada(Long id, Usuario usuario, double latitud, double longitud, Date fecha) {
+    public Coordenada(Long id, String imei, String bateria, String almacenamientoDisponible, double latitud,
+                      double longitud, Date fecha) {
         this.id = id;
-        this.usuario = usuario;
+        this.imei = imei;
+        this.bateria = bateria;
+        this.almacenamientoDisponible = almacenamientoDisponible;
         this.latitud = latitud;
         this.longitud = longitud;
         this.fecha = fecha;
@@ -29,12 +34,28 @@ public class Coordenada {
         this.id = id;
     }
 
-    public Usuario getUsuario() {
-        return usuario;
+    public String getImei() {
+        return imei;
     }
 
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
+    public void setImei(String imei) {
+        this.imei = imei;
+    }
+
+    public String getBateria() {
+        return bateria;
+    }
+
+    public void setBateria(String bateria) {
+        this.bateria = bateria;
+    }
+
+    public String getAlmacenamientoDisponible() {
+        return almacenamientoDisponible;
+    }
+
+    public void setAlmacenamientoDisponible(String almacenamientoDisponible) {
+        this.almacenamientoDisponible = almacenamientoDisponible;
     }
 
     public double getLatitud() {
@@ -61,4 +82,3 @@ public class Coordenada {
         this.fecha = fecha;
     }
 }
-
