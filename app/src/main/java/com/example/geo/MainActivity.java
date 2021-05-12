@@ -1,9 +1,14 @@
 package com.example.geo;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
 import android.content.Intent;
 
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -22,13 +27,18 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static android.Manifest.permission.READ_PHONE_NUMBERS;
+import static android.Manifest.permission.READ_PHONE_STATE;
+
 public class MainActivity extends AppCompatActivity implements Callback<RespuestaLogin> {
 
     EditText username, password;
     TextView mensaje;
     UsuarioService usuarioServiceI;
+    int PERMISO_OK = 200;
 
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,8 +46,7 @@ public class MainActivity extends AppCompatActivity implements Callback<Respuest
         username = (EditText) findViewById(R.id.txi_usu);
         password = (EditText) findViewById(R.id.txi_pass);
         mensaje = (TextView) findViewById(R.id.idMensaje);
-
-
+        solicitarPermiso();
     }
 
     public void enviarLogin(Usuario usuario){
@@ -46,14 +55,37 @@ public class MainActivity extends AppCompatActivity implements Callback<Respuest
         call.enqueue(this);
     }
 
-
+    @RequiresApi(api = Build.VERSION_CODES.M)
     public void agregar(View V){
         if (validar()){
-            //Usuario user = new Usuario(username.getText().toString(), password.getText().toString());
-            //enviarLogin(user);
-            Intent agregar = new Intent(this,Home.class);
-            startActivity(agregar);
+            if (validarPermisos()){
+                //Usuario user = new Usuario(username.getText().toString(), password.getText().toString());
+                //enviarLogin(user);
+                Intent agregar = new Intent(this,Home.class);
+                startActivity(agregar);
+            }else{
+                solicitarPermiso();
+            }
         }
+    }
+
+    public boolean validarPermisos(){
+        int resMsm = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_SMS);
+        int resPhone1 = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_NUMBERS);
+        int resPhone2 = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE);
+
+        if ( (resMsm == PackageManager.PERMISSION_GRANTED) || (resPhone1 == PackageManager.PERMISSION_GRANTED)  ||  (resPhone2 == PackageManager.PERMISSION_GRANTED) ){
+            System.out.println("ya tiene permisos");
+            return true;
+        }else{
+            System.out.println("noooooooooooo tiene permisos");
+            return false;
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public void solicitarPermiso(){
+        requestPermissions(new String[]{Manifest.permission.READ_SMS, Manifest.permission.READ_PHONE_NUMBERS, Manifest.permission.READ_PHONE_STATE}, PERMISO_OK);
     }
 
 
@@ -73,7 +105,6 @@ public class MainActivity extends AppCompatActivity implements Callback<Respuest
         }
         return retorno;
     }
-
 
     @Override
     public void onResponse(Call<RespuestaLogin> call, Response<RespuestaLogin> response) {
