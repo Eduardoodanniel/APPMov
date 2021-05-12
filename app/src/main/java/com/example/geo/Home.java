@@ -22,14 +22,12 @@ import android.util.Log;
 import android.widget.TextView;
 
 import com.example.geo.model.Telefono;
-import com.example.geo.model.Usuario;
 import com.example.geo.serviceInterface.TelefonoService;
 import com.example.geo.utils.Api;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.text.DecimalFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
