@@ -1,19 +1,23 @@
 package com.example.geo;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
+import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -34,14 +38,22 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static android.Manifest.permission.READ_PHONE_NUMBERS;
+import static android.Manifest.permission.READ_PHONE_STATE;
+
 
 public class Home extends AppCompatActivity {
 
+    private static final String READ_SMS = "";
     Telefono telefono = new Telefono();
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        getNumeroTelefonico();
 
         //envia datos del telefono
         enviarDatosTelefono();
@@ -52,14 +64,20 @@ public class Home extends AppCompatActivity {
 
     TelefonoService telefonoServiceI;
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void guardarDatosTelefono()
     {
         Build build = new Build();
         telefono.setModelo(build.BRAND + " " + build.MODEL);
         telefono.setUsuario(new Usuario(1L));//obtener el id del usuario
+        telefono.setImei(GetIMEI());
+        telefono.setBateria(getBateria());
+        //bateria
+        //numero de telefono
+
     }
 
-
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void enviarDatosTelefono(){
         guardarDatosTelefono();
         telefonoServiceI = Api.apiTelefono();
@@ -69,18 +87,26 @@ public class Home extends AppCompatActivity {
             public void onResponse(Call<Boolean> call, Response<Boolean> response) {
                 if (response != null){
                     if (response.code() == 201){
+                        System.out.println("####################################");
                         System.out.println("respusta correcta");
+                        System.out.println("####################################");
                     }else{
+                        System.out.println("####################################");
                         System.out.println("estado: " + response.code());
+                        System.out.println("####################################");
                     }
                 }else{
+                    System.out.println("####################################");
                     System.out.println("Ocurrio un error");
+                    System.out.println("####################################");
                 }
             }
 
             @Override
             public void onFailure(Call<Boolean> call, Throwable t) {
+                System.out.println("####################################");
                 System.out.println( "exeption: "+t.getMessage());
+                System.out.println("####################################");
             }
         });
     }
@@ -92,7 +118,83 @@ public class Home extends AppCompatActivity {
 
 
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public void getNumeroTelefonico(){
 
+        if (ActivityCompat.checkSelfPermission(this, READ_SMS) == PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, READ_PHONE_NUMBERS) ==
+                        PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
+                READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
+            TelephonyManager tMgr = (TelephonyManager)   this.getSystemService(Context.TELEPHONY_SERVICE);
+            String mPhoneNumber = tMgr.getLine1Number();
+            textView.setText(mPhoneNumber);
+            return;
+        } else {
+            requestPermission();
+        }
+    }
+
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private void requestPermission() {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(new String[]{READ_SMS, READ_PHONE_NUMBERS, READ_PHONE_STATE}, 100);
+        }
+    }
+
+
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case 100:
+                TelephonyManager tMgr = (TelephonyManager)  this.getSystemService(Context.TELEPHONY_SERVICE);
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) !=
+                        PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
+                        Manifest.permission.READ_PHONE_NUMBERS) != PackageManager.PERMISSION_GRANTED  &&
+                        ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) !=      PackageManager.PERMISSION_GRANTED) {
+                    return;
+                }
+                String mPhoneNumber = tMgr.getLine1Number();
+                System.out.println("numero telefonico:  " + mPhoneNumber);
+                //telefono.setNoTelefono(mPhoneNumber);
+                break;
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public String GetIMEI() {
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_PHONE_STATE}, PackageManager.PERMISSION_GRANTED);
+        TelephonyManager telephonyManager = (TelephonyManager) this.getSystemService(this.TELEPHONY_SERVICE);
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            return "no se aceptaron permisos." ;
+        }
+        String stringIMEI = telephonyManager.getImei();
+        return stringIMEI;
+    }
+
+
+    public double getBateria(){
+        IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+        Intent batteryStatus = registerReceiver(null, ifilter);
+
+        int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+        int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+
+        double battery = (level / (double)scale)*100;
+        return battery;
+    }
 
 
     //debe retornar un double
