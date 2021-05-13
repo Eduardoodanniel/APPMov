@@ -1,24 +1,21 @@
 package com.example.geo;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.media.MediaPlayer;
 import android.os.BatteryManager;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
-import android.widget.Toast;
+import android.telephony.TelephonyManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
+import androidx.annotation.RequiresApi;
 
 import com.example.geo.model.Coordenada;
 import com.example.geo.model.enviarCoordenadas;
@@ -49,11 +46,14 @@ public class ServiceAndroid extends Service implements LocationListener {
         }
     }
 
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onCreate(){
         super.onCreate();
-        getLocation();
+         getLocation();
         coordenada  = new Coordenada();
+        coordenada.setImei(getImei());
         enviarCoor = new enviarCoordenadas();
         System.out.println("se creo el servicio");
     }
@@ -61,17 +61,27 @@ public class ServiceAndroid extends Service implements LocationListener {
     @Override
     public int onStartCommand(Intent intent, int flag, int idProcess){
         System.out.println("inicio el servicio");
-            final Handler handler= new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    coordenada.setLatitud(latitud);
-                    coordenada.setLongitud(longitud);
-                    coordenada.setBateria(getBateria());
+
+        final Handler handler= new Handler();
+
+        handler.postDelayed(new Runnable() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void run() {
+                coordenada.setLatitud(latitud);
+                coordenada.setLongitud(longitud);
+                coordenada.setBateria(getBateria());
+                coordenada.setImei(getImei());
+                if (gpsActivo){
                     enviarCoor.eniviar(coordenada);
-                    handler.postDelayed(this,10000);//se ejecutara cada 2 segundos
+                }else{
+                    System.out.println("Activa tu gps");
                 }
-            },5000);//empezara a ejecutarse después de 5 segundos
+
+                handler.postDelayed(this,10000);//se ejecutara cada 2 segundos
+            }
+        },5000);//empezara a ejecutarse después de 5 segundos
+
 
         return START_STICKY;
     }
@@ -95,6 +105,12 @@ public class ServiceAndroid extends Service implements LocationListener {
         longitud = location.getLongitude();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public String getImei() {
+        TelephonyManager telephonyManager = (TelephonyManager) this.getSystemService(this.TELEPHONY_SERVICE);
+        String stringIMEI = telephonyManager.getImei();
+        return stringIMEI;
+    }
 
     public String getBateria(){
         IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);

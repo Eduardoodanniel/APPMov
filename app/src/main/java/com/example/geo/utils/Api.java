@@ -7,10 +7,10 @@ import com.example.geo.serviceInterface.UsuarioService;
 
 public class Api {
 
-    private static final String ip = "192.168.100.214:8080";
-    public static final String URL_01 = "http://192.168.100.214:8080/";
-    public static final String URL_02 = "http://192.168.100.214:8080/telefono/";
-    public static final String URL_03 = "http://192.168.100.214:8080/coordenada/";
+    private static final String IP = "http://192.168.100.214:8080";
+    public static final String URL_01 = IP + "/";
+    public static final String URL_02 = IP + "/telefono/";
+    public static final String URL_03 = IP + "/coordenada/";
 
     public static UsuarioService getUsuarios(){
         return RetrofitService.getRetrofit(URL_01).create(UsuarioService.class);

@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -29,6 +31,7 @@ import com.example.geo.utils.Api;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -45,24 +48,32 @@ import static android.Manifest.permission.READ_PHONE_STATE;
 
 public class Home extends AppCompatActivity {
 
+    long idUsuario;
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        //obtener el id del usuario
+        idUsuario = getIntent().getExtras().getLong("idUsuario");
+
+        //enviar datos del telefono
         enviarDatosTelefono(getDatosTelefono());
 
         //inicia el servicio
         startService(new Intent(this, ServiceAndroid.class));
     }
 
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     private Telefono getDatosTelefono()
     {
-        Telefono telefono = new Telefono();
-        telefono.setIdUsuario(1L);  // obtener id del usuario
-
         Build build = new Build();
+        Telefono telefono = new Telefono();
+
+        telefono.setIdUsuario(idUsuario);
         telefono.setModelo(build.BRAND + " " + build.MODEL);
         telefono.setVersionAndroid(Build.VERSION.RELEASE);
         telefono.setImei(getImei());
@@ -70,7 +81,6 @@ public class Home extends AppCompatActivity {
         telefono.setRam(getRam());
         return telefono;
     }
-
 
     private void enviarDatosTelefono(Telefono telefono){
         TelefonoService telefonoServiceI = Api.apiTelefono();
@@ -80,7 +90,7 @@ public class Home extends AppCompatActivity {
             public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
                 if (response != null){
                     if (response.code() == 201){
-                        System.out.println("respusta correcta");
+                        System.out.println("se guardaron las caracteristicas del telefono");
                     }else{
                         System.out.println("estado: " + response.code());
                     }
@@ -96,12 +106,12 @@ public class Home extends AppCompatActivity {
         });
     }
 
+
     @SuppressLint("MissingPermission")
     public String getNumeroTelefonico(){
-        TelephonyManager tMgr = (TelephonyManager)   this.getSystemService(Context.TELEPHONY_SERVICE);
+          TelephonyManager tMgr = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
         return tMgr.getLine1Number();
     }
-
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public String getImei() {
@@ -151,20 +161,4 @@ public class Home extends AppCompatActivity {
 
         return lastValue;
     }
-
-    /*
-  public String getBateria(){
-        IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
-        Intent batteryStatus = registerReceiver(null, ifilter);
-
-
-        int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
-        int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
-
-        double battery = (level / (double)scale)*100;
-        String res = String.valueOf(battery);
-        return res.concat("%");
-    }
-*/
-
 }

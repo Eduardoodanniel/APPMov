@@ -61,8 +61,9 @@ public class MainActivity extends AppCompatActivity implements Callback<Respuest
             if (validarPermisos()){
                 //Usuario user = new Usuario(username.getText().toString(), password.getText().toString());
                 //enviarLogin(user);
-                Intent agregar = new Intent(this,Home.class);
-                startActivity(agregar);
+                Intent home = new Intent(this,Home.class);
+                home.putExtra("idUsuario", 1L);
+                startActivity(home);
             }else{
                 solicitarPermiso();
             }
@@ -117,8 +118,9 @@ public class MainActivity extends AppCompatActivity implements Callback<Respuest
             RespuestaLogin resLogin = response.body();
             if (resLogin.getIdUsuario() != null){
                 mensaje.setText("Correcto");
-                Intent agregar = new Intent(this,Home.class);
-                startActivity(agregar);
+                Intent home = new Intent(this,Home.class);
+                home.putExtra("idUsuario", response.body().getIdUsuario());
+                startActivity(home);
                 return;
             }
             mensaje.setText(resLogin.getMensajeAplication());
