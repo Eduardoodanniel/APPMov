@@ -22,39 +22,46 @@ import com.example.geo.model.enviarCoordenadas;
 
 public class ServiceAndroid extends Service implements LocationListener {
 
-    double latitud, longitud;
+
     LocationManager locationManager;
     Location location;
-    boolean gpsActivo;
     Coordenada coordenada;
     enviarCoordenadas enviarCoor;
 
-
-    @SuppressLint("MissingPermission")
-    public void getLocation() {
-        try {
-            locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
-            gpsActivo = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        } catch (Exception e) {
-        }
-
-        if (gpsActivo) {
-            locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 1000, 0, this);
-            location = locationManager.getLastKnownLocation(locationManager.GPS_PROVIDER);
-            latitud = location.getLatitude();
-            longitud = location.getLongitude();
-        }
+    public boolean gpsIsActivo(){
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
     }
 
+    @SuppressLint("MissingPermission")
+    public void iniciarLocation() {
+        try {
+            locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
+        } catch (Exception e) {
+            System.out.println("error al definir la variable locationManager");
+            System.out.println("exception: " + e.getMessage());
+        }
+
+        if (gpsIsActivo())
+        {
+            try {
+                locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 1000, 0, this);
+                location = locationManager.getLastKnownLocation(locationManager.GPS_PROVIDER);
+            } catch (Exception e) {
+                System.out.println("error al definir la variable location");
+                System.out.println("exception: " + e.getMessage());
+            }
+        }
+
+    }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onCreate(){
         super.onCreate();
-         getLocation();
         coordenada  = new Coordenada();
-        coordenada.setImei(getImei());
         enviarCoor = new enviarCoordenadas();
+        coordenada.setImei(getImei());
+        iniciarLocation();
         System.out.println("se creo el servicio");
     }
 
@@ -63,26 +70,18 @@ public class ServiceAndroid extends Service implements LocationListener {
         System.out.println("inicio el servicio");
 
         final Handler handler= new Handler();
-
         handler.postDelayed(new Runnable() {
-            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void run() {
-                coordenada.setLatitud(latitud);
-                coordenada.setLongitud(longitud);
-                coordenada.setBateria(getBateria());
-                coordenada.setImei(getImei());
-                if (gpsActivo){
+                if (gpsIsActivo()){
+                    coordenada.setBateria(getBateria());
                     enviarCoor.eniviar(coordenada);
                 }else{
                     System.out.println("Activa tu gps");
                 }
-
                 handler.postDelayed(this,10000);//se ejecutara cada 2 segundos
             }
         },5000);//empezara a ejecutarse después de 5 segundos
-
-
         return START_STICKY;
     }
 
@@ -101,9 +100,21 @@ public class ServiceAndroid extends Service implements LocationListener {
 
     @Override
     public void onLocationChanged(@NonNull Location location) {
-        latitud = location.getLatitude();
-        longitud = location.getLongitude();
+        coordenada.setLatitud(location.getLatitude());
+        coordenada.setLongitud(location.getLongitude());
     }
+
+    @Override
+    public void onProviderEnabled(@NonNull String provider) {
+        System.out.println("se Activo el gps: " + provider);
+        //iniciarLocation();
+    }
+
+    @Override
+    public void onProviderDisabled(@NonNull String provider) {
+        System.out.println("se desactivo el gps: " + provider);
+    }
+
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public String getImei() {
