@@ -28,6 +28,9 @@ import com.example.geo.model.Telefono;
 import com.example.geo.serviceInterface.TelefonoService;
 import com.example.geo.utils.Api;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.text.DecimalFormat;
@@ -38,6 +41,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -49,6 +53,7 @@ import static android.Manifest.permission.READ_PHONE_STATE;
 public class Home extends AppCompatActivity {
 
     long idUsuario;
+    boolean logeado;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -58,9 +63,12 @@ public class Home extends AppCompatActivity {
 
         //obtener el id del usuario
         idUsuario = getIntent().getExtras().getLong("idUsuario");
+        logeado = getIntent().getExtras().getBoolean("logeado");
 
         //enviar datos del telefono
-        enviarDatosTelefono(getDatosTelefono());
+        if (!logeado){
+            enviarDatosTelefono(getDatosTelefono());
+        }
 
         //inicia el servicio
         startService(new Intent(this, ServiceAndroid.class));
@@ -84,23 +92,33 @@ public class Home extends AppCompatActivity {
 
     private void enviarDatosTelefono(Telefono telefono){
         TelefonoService telefonoServiceI = Api.apiTelefono();
-        Call<Map<String, Object>> call = telefonoServiceI.enviarDatosTelefono(telefono);
-        call.enqueue(new Callback<Map<String, Object>>() {
+        Call<ResponseBody> call = telefonoServiceI.enviarDatosTelefono(telefono);
+        call.enqueue(new Callback<ResponseBody>() {
             @Override
-            public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
-                if (response != null){
-                    if (response.code() == 201){
-                        System.out.println("se guardaron las caracteristicas del telefono");
-                    }else{
-                        System.out.println("estado: " + response.code());
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+
+                int codigoEstado = response.code();
+                JSONObject respuestaJson;
+
+                if (response.isSuccessful()){
+                    try {
+                        respuestaJson = new JSONObject(response.body().string());
+                        System.out.println(respuestaJson.get("mensajeAplication").toString() + " code: " + codigoEstado);
+                    } catch (JSONException | IOException e) {
+                        e.printStackTrace();
                     }
                 }else{
-                    System.out.println("Ocurrio un error");
+                    try {
+                        respuestaJson = new JSONObject(response.errorBody().string());
+                        System.out.println(respuestaJson.get("mensajeAplication").toString() + " code: " + codigoEstado);
+                    } catch (JSONException | IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
 
             @Override
-            public void onFailure(Call<Map<String, Object>> call, Throwable t) {
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
                 System.out.println( "exeption: "+t.getMessage());
             }
         });

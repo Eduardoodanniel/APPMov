@@ -9,8 +9,10 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.BatteryManager;
 import android.os.Build;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.StatFs;
 import android.telephony.TelephonyManager;
 
 import androidx.annotation.NonNull;
@@ -78,6 +80,7 @@ public class ServiceAndroid extends Service implements LocationListener {
                     enviarCoor.eniviar(coordenada);
                 }else{
                     System.out.println("Activa tu gps");
+                    iniciarLocation();
                 }
                 handler.postDelayed(this,10000);//se ejecutara cada 2 segundos
             }
@@ -107,7 +110,7 @@ public class ServiceAndroid extends Service implements LocationListener {
     @Override
     public void onProviderEnabled(@NonNull String provider) {
         System.out.println("se Activo el gps: " + provider);
-        //iniciarLocation();
+        iniciarLocation();
     }
 
     @Override
@@ -131,7 +134,7 @@ public class ServiceAndroid extends Service implements LocationListener {
         int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
 
         double battery = (level / (double)scale)*100;
-        String res = String.valueOf(battery);
+        String res = String.valueOf(battery).substring(0, 4);
         return res.concat("%");
     }
 

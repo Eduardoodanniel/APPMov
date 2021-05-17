@@ -3,8 +3,13 @@ package com.example.geo.model;
 import com.example.geo.serviceInterface.CoordenadaService;
 import com.example.geo.utils.Api;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.Map;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -15,23 +20,32 @@ public class enviarCoordenadas {
     public void eniviar(Coordenada cordenada){
 
         CoordenadaService coordenadaI =  Api.apiCoordenada();
-        Call<Map<String, Object>> call = coordenadaI.enviarCoordenadas(cordenada);
-        call.enqueue(new Callback<Map<String, Object>>() {
+        Call<ResponseBody> call = coordenadaI.enviarCoordenadas(cordenada);
+        call.enqueue(new Callback<ResponseBody>() {
             @Override
-            public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
-                if (response != null){
-                    if (response.code() == 201){
-                        System.out.println("respusta correcta");
-                    }else{
-                        System.out.println("estado: " + response.code());
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                int codigoEstado = response.code();
+                JSONObject respuestaJson;
+
+                if (response.isSuccessful()){
+                    try {
+                        respuestaJson = new JSONObject(response.body().string());
+                        System.out.println(respuestaJson.get("mensajeAplication").toString() + " code: " + codigoEstado);
+                    } catch (JSONException | IOException e) {
+                        e.printStackTrace();
                     }
                 }else{
-                    System.out.println("Ocurrio un error");
+                    try {
+                        respuestaJson = new JSONObject(response.errorBody().string());
+                        System.out.println(respuestaJson.get("mensajeAplication").toString() + " code: " + codigoEstado);
+                    } catch (JSONException | IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
 
             @Override
-            public void onFailure(Call<Map<String, Object>> call, Throwable t) {
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
                 System.out.println( "exeption: "+t.getMessage());
             }
         });

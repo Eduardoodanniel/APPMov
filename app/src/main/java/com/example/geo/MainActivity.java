@@ -7,6 +7,7 @@ import androidx.core.content.ContextCompat;
 import android.Manifest;
 import android.content.Intent;
 
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -19,10 +20,16 @@ import com.example.geo.model.RespuestaLogin;
 import com.example.geo.model.Usuario;
 import com.example.geo.serviceInterface.UsuarioService;
 import com.example.geo.utils.Api;
+import com.google.gson.JsonObject;
 
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.Map;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -30,13 +37,14 @@ import retrofit2.Response;
 import static android.Manifest.permission.READ_PHONE_NUMBERS;
 import static android.Manifest.permission.READ_PHONE_STATE;
 
-public class MainActivity extends AppCompatActivity implements Callback<RespuestaLogin> {
+public class MainActivity extends AppCompatActivity implements Callback<ResponseBody> {
 
     EditText username, password;
     TextView mensaje;
     UsuarioService usuarioServiceI;
     int PERMISO_OK = 200;
 
+    SharedPreferences sharedPreferences;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -46,24 +54,37 @@ public class MainActivity extends AppCompatActivity implements Callback<Respuest
         username = (EditText) findViewById(R.id.txi_usu);
         password = (EditText) findViewById(R.id.txi_pass);
         mensaje = (TextView) findViewById(R.id.idMensaje);
+        sharedPreferences = this.getSharedPreferences("Shared_pref",this.MODE_PRIVATE);
         solicitarPermiso();
+        llave();
     }
 
-    public void enviarLogin(Usuario usuario){
-        usuarioServiceI = Api.getUsuarios();
-        Call<RespuestaLogin> call = usuarioServiceI.enviarLogin(usuario);
-        call.enqueue(this);
+    public void llave(){
+        String username =sharedPreferences.getString("userName","");
+        String password = sharedPreferences.getString("password","");
+        long idUsuario = sharedPreferences.getLong("idUsuario", 0);
+
+        if (!username.isEmpty() && !password.isEmpty()){
+            this.username.setText(username);
+            this.password.setText(password);
+            if (validarPermisos()){
+                Intent home = new Intent(this,Home.class);
+                home.putExtra("logeado", true);
+                home.putExtra("idUsuario", idUsuario);
+                startActivity(home);
+            }
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void agregar(View V){
         if (validar()){
             if (validarPermisos()){
-                //Usuario user = new Usuario(username.getText().toString(), password.getText().toString());
-                //enviarLogin(user);
-                Intent home = new Intent(this,Home.class);
-                home.putExtra("idUsuario", 1L);
-                startActivity(home);
+                Usuario user = new Usuario(username.getText().toString(), password.getText().toString());
+                enviarLogin(user);
+                //Intent home = new Intent(this,Home.class);
+                //home.putExtra("idUsuario", 1L);
+                //startActivity(home);
             }else{
                 solicitarPermiso();
             }
@@ -112,25 +133,52 @@ public class MainActivity extends AppCompatActivity implements Callback<Respuest
         return retorno;
     }
 
+    public void enviarLogin(Usuario usuario){
+        usuarioServiceI = Api.getUsuarios();
+        Call<ResponseBody> call = usuarioServiceI.enviarLogin(usuario);
+        call.enqueue(this);
+    }
+
     @Override
-    public void onResponse(Call<RespuestaLogin> call, Response<RespuestaLogin> response) {
+    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+
+        int codigoEstado = response.code();
+        JSONObject respuestaJson;
+        Long idUsuario = null;
+
         if (response.isSuccessful()){
-            RespuestaLogin resLogin = response.body();
-            if (resLogin.getIdUsuario() != null){
-                mensaje.setText("Correcto");
+            mensaje.setText("");
+            try {
+                respuestaJson = new JSONObject(response.body().string());
+                idUsuario = respuestaJson.getLong("idUsuario");
+
+                SharedPreferences.Editor editor= sharedPreferences.edit();
+                editor.putLong("idUsuario", idUsuario);
+                editor.putString("userName",username.getText().toString());
+                editor.putString("password",password.getText().toString());
+                editor.apply();
+                finish();
+
                 Intent home = new Intent(this,Home.class);
-                home.putExtra("idUsuario", response.body().getIdUsuario());
+                home.putExtra("idUsuario", idUsuario);
+                home.putExtra("logeado", false);
                 startActivity(home);
-                return;
+
+            } catch (JSONException | IOException e) {
+                e.printStackTrace();
             }
-            mensaje.setText(resLogin.getMensajeAplication());
         }else{
-            mensaje.setText("OCURRIO UN ERROR DE MAPEO");
+            try {
+                respuestaJson = new JSONObject(response.errorBody().string());
+                mensaje.setText(respuestaJson.get("mensajeAplication").toString());
+            } catch (JSONException | IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     @Override
-    public void onFailure(Call<RespuestaLogin> call, Throwable t) {
+    public void onFailure(Call<ResponseBody> call, Throwable t) {
         mensaje.setText("Error de conexion.");
         System.out.println("error: " + t.getMessage());
     }
