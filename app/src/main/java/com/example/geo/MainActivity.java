@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements Callback<Response
     TextView mensaje;
     UsuarioService usuarioServiceI;
     int PERMISO_OK = 200;
+    boolean logeado = false;
 
     SharedPreferences sharedPreferences;
 
@@ -68,10 +69,13 @@ public class MainActivity extends AppCompatActivity implements Callback<Response
             this.username.setText(username);
             this.password.setText(password);
             if (validarPermisos()){
-                Intent home = new Intent(this,Home.class);
+                logeado = true;
+                Usuario user = new Usuario(username, password);
+                enviarLogin(user);
+                /*Intent home = new Intent(this,Home.class);
                 home.putExtra("logeado", true);
                 home.putExtra("idUsuario", idUsuario);
-                startActivity(home);
+                startActivity(home);*/
             }
         }
     }
@@ -80,6 +84,7 @@ public class MainActivity extends AppCompatActivity implements Callback<Response
     public void agregar(View V){
         if (validar()){
             if (validarPermisos()){
+                logeado = false;
                 Usuario user = new Usuario(username.getText().toString(), password.getText().toString());
                 enviarLogin(user);
                 //Intent home = new Intent(this,Home.class);
@@ -161,7 +166,7 @@ public class MainActivity extends AppCompatActivity implements Callback<Response
 
                 Intent home = new Intent(this,Home.class);
                 home.putExtra("idUsuario", idUsuario);
-                home.putExtra("logeado", false);
+                home.putExtra("logeado", logeado);
                 startActivity(home);
 
             } catch (JSONException | IOException e) {
