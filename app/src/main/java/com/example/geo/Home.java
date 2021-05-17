@@ -54,12 +54,14 @@ public class Home extends AppCompatActivity {
 
     long idUsuario;
     boolean logeado;
+    TextView mensaje;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        mensaje = (TextView) findViewById(R.id.mensaje);
 
         //obtener el id del usuario
         idUsuario = getIntent().getExtras().getLong("idUsuario");
@@ -104,6 +106,7 @@ public class Home extends AppCompatActivity {
                     try {
                         respuestaJson = new JSONObject(response.body().string());
                         System.out.println(respuestaJson.get("mensajeAplication").toString() + " code: " + codigoEstado);
+                        mensaje.setText(respuestaJson.get("mensajeAplication").toString());
                     } catch (JSONException | IOException e) {
                         e.printStackTrace();
                     }
@@ -111,6 +114,7 @@ public class Home extends AppCompatActivity {
                     try {
                         respuestaJson = new JSONObject(response.errorBody().string());
                         System.out.println(respuestaJson.get("mensajeAplication").toString() + " code: " + codigoEstado);
+                        mensaje.setText(respuestaJson.get("mensajeAplication").toString() + " code: " + codigoEstado);
                     } catch (JSONException | IOException e) {
                         e.printStackTrace();
                     }

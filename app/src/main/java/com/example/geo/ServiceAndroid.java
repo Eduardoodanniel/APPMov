@@ -2,6 +2,7 @@ package com.example.geo;
 
 import android.annotation.SuppressLint;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.location.Location;
@@ -14,6 +15,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.StatFs;
 import android.telephony.TelephonyManager;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -46,7 +48,7 @@ public class ServiceAndroid extends Service implements LocationListener {
         if (gpsIsActivo())
         {
             try {
-                locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 1000, 0, this);
+                locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 29*60000, 0, this);
                 location = locationManager.getLastKnownLocation(locationManager.GPS_PROVIDER);
             } catch (Exception e) {
                 System.out.println("error al definir la variable location");
@@ -70,21 +72,24 @@ public class ServiceAndroid extends Service implements LocationListener {
     @Override
     public int onStartCommand(Intent intent, int flag, int idProcess){
         System.out.println("inicio el servicio");
-
+        Context ct = this;
         final Handler handler= new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 if (gpsIsActivo()){
+
+                    if (coordenada.getLatitud() == 0){
+                        iniciarLocation();
+                    }
                     coordenada.setBateria(getBateria());
                     enviarCoor.eniviar(coordenada);
                 }else{
-                    System.out.println("Activa tu gps");
-                    iniciarLocation();
+                    Toast.makeText(ct, "Avtiva tu GPS", Toast.LENGTH_SHORT).show();
                 }
-                handler.postDelayed(this,10000);//se ejecutara cada 2 segundos
+                handler.postDelayed(this,30*60000);//se ejecutara cada 30 minutos
             }
-        },5000);//empezara a ejecutarse después de 5 segundos
+        }, 40000);//empezara a ejecutarse después 40 segundos
         return START_STICKY;
     }
 
