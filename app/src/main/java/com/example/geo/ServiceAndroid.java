@@ -24,6 +24,8 @@ import androidx.annotation.RequiresApi;
 import com.example.geo.model.Coordenada;
 import com.example.geo.model.enviarCoordenadas;
 
+import java.io.File;
+
 public class ServiceAndroid extends Service implements LocationListener {
 
 
@@ -75,6 +77,7 @@ public class ServiceAndroid extends Service implements LocationListener {
         Context ct = this;
         final Handler handler= new Handler();
         handler.postDelayed(new Runnable() {
+            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
             @Override
             public void run() {
                 if (gpsIsActivo()){
@@ -82,6 +85,7 @@ public class ServiceAndroid extends Service implements LocationListener {
                     if (coordenada.getLatitud() == 0){
                         iniciarLocation();
                     }
+                    coordenada.setAlmacenamientoDisponible(getAlmacenamientoDisponible());
                     coordenada.setBateria(getBateria());
                     enviarCoor.eniviar(coordenada);
                 }else{
@@ -141,6 +145,43 @@ public class ServiceAndroid extends Service implements LocationListener {
         double battery = (level / (double)scale)*100;
         String res = String.valueOf(battery).substring(0, 4);
         return res.concat("%");
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
+    public String getAlmacenamientoDisponible() {
+        File path = Environment.getDataDirectory();
+        StatFs stat = new StatFs(path.getPath());
+        long blockSize = stat.getBlockSizeLong();
+        long availableBlocks = stat.getAvailableBlocksLong();
+        return formatSize((availableBlocks * blockSize / (1024*1024)));
+    }
+
+
+    public static String formatSize(long size) {
+        String suffix = null;
+
+        if (size >= 1024) {
+            suffix = "KB";
+            size /= 1024;
+            if (size >= 1024) {
+                suffix = "MB";
+                size /= 1024;
+                if(size >= 1024);
+                suffix = "GB";
+                size /= 1024;
+            }
+        }
+
+        StringBuilder resultBuffer = new StringBuilder(Long.toString(size));
+
+        int commaOffset = resultBuffer.length() - 3;
+        while (commaOffset > 0) {
+            resultBuffer.insert(commaOffset, ',');
+            commaOffset -= 3;
+        }
+
+        if (suffix != null) resultBuffer.append(suffix);
+        return resultBuffer.toString();
     }
 
 }

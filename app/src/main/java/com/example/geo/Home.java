@@ -20,6 +20,8 @@ import android.location.LocationProvider;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.StatFs;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.TextView;
@@ -89,6 +91,7 @@ public class Home extends AppCompatActivity {
         telefono.setImei(getImei());
         telefono.setNoTelefono(getNumeroTelefonico());
         telefono.setRam(getRam());
+        telefono.setAlmacenamientoTotal(getMemoriaTotal());
         return telefono;
     }
 
@@ -140,6 +143,42 @@ public class Home extends AppCompatActivity {
         TelephonyManager telephonyManager = (TelephonyManager) this.getSystemService(this.TELEPHONY_SERVICE);
         String stringIMEI = telephonyManager.getImei();
         return stringIMEI;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
+    public String getMemoriaTotal() {
+        StatFs stat = new StatFs(Environment.getExternalStorageDirectory().getPath());
+        // StatFs stat = new StatFs(path.getPath());
+        long blockSize = stat.getBlockSizeLong();
+        long totalBlocks = stat.getBlockCountLong();
+        return formatSize((totalBlocks * blockSize / (1024*1024)));
+    }
+
+    public static String formatSize(long size) {
+        String suffix = null;
+
+        if (size >= 1024) {
+            suffix = "KB";
+            size /= 1024;
+            if (size >= 1024) {
+                suffix = "MB";
+                size /= 1024;
+                if(size >= 1024);
+                suffix = "GB";
+                size /= 1024;
+            }
+        }
+
+        StringBuilder resultBuffer = new StringBuilder(Long.toString(size));
+
+        int commaOffset = resultBuffer.length() - 3;
+        while (commaOffset > 0) {
+            resultBuffer.insert(commaOffset, ',');
+            commaOffset -= 3;
+        }
+
+        if (suffix != null) resultBuffer.append(suffix);
+        return resultBuffer.toString();
     }
 
     public String getRam() {
