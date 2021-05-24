@@ -91,7 +91,7 @@ public class Home extends AppCompatActivity {
         telefono.setImei(getImei());
         telefono.setNoTelefono(getNumeroTelefonico());
         telefono.setRam(getRam());
-        telefono.setAlmacenamientoTotal(getMemoriaTotal());
+        telefono.setAlmacenamientoTotal(String.valueOf(getMemoriaTotal()));
         return telefono;
     }
 
@@ -146,12 +146,12 @@ public class Home extends AppCompatActivity {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
-    public String getMemoriaTotal() {
+    public Long getMemoriaTotal() {
         StatFs stat = new StatFs(Environment.getExternalStorageDirectory().getPath());
         // StatFs stat = new StatFs(path.getPath());
         long blockSize = stat.getBlockSizeLong();
         long totalBlocks = stat.getBlockCountLong();
-        return formatSize((totalBlocks * blockSize / (1024*1024)));
+        return (totalBlocks * blockSize / (1024*1024));
     }
 
     public static String formatSize(long size) {

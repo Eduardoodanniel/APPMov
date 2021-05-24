@@ -7,7 +7,7 @@ import com.example.geo.serviceInterface.UsuarioService;
 
 public class Api {
 
-    private static final String IP = "http://192.168.100.186:81";
+    private static final String IP = "https://apps.microformas.com.mx:8443/APIGEO";
     public static final String URL_01 = IP +"/";
     public static final String URL_02 = IP + "/telefono/";
     public static final String URL_03 = IP + "/coordenada/";
