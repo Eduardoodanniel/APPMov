@@ -137,9 +137,15 @@ public class Home extends AppCompatActivity {
     public String getNumeroTelefonico() {
         TelephonyManager tMgr = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_NUMBERS) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-            return null;
+            return "+52";
+        }else{
+            try {
+                return tMgr.getLine1Number();
+            }catch (Exception e){
+                System.out.println("Exception: " + e.getMessage());
+            }
+            return "+52";
         }
-        return tMgr.getLine1Number();
     }
 
 
