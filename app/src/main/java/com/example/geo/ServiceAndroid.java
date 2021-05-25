@@ -55,7 +55,7 @@ public class ServiceAndroid extends Service implements LocationListener {
         if (gpsIsActivo())
         {
             try {//29*60000
-                locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 3000, 0, this);
+                locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 29*60000, 0, this);
                 location = locationManager.getLastKnownLocation(locationManager.GPS_PROVIDER);
             } catch (Exception e) {
                 System.out.println("error al definir la variable location");
@@ -96,9 +96,9 @@ public class ServiceAndroid extends Service implements LocationListener {
                 }else{
                     Toast.makeText(ct, "Avtiva tu GPS", Toast.LENGTH_SHORT).show();
                 }//30*60000
-                handler.postDelayed(this,4000);//se ejecutara cada 30 minutos
+                handler.postDelayed(this,30*60000);//se ejecutara cada 30 minutos
             }
-        }, 5000);//empezara a ejecutarse después 40 segundos
+        }, 40000);//empezara a ejecutarse después 40 segundos
         return START_STICKY;
     }
 
@@ -114,16 +114,6 @@ public class ServiceAndroid extends Service implements LocationListener {
         return null;
     }
 
-
-    /*@Override
-    public void onLocationChanged(@NonNull Location location) {
-        try {
-            coordenada.setLatitud(location.getLatitude());
-            coordenada.setLongitud(location.getLongitude());
-        }catch (Exception e){
-            System.out.println("Changed: " + e.getLocalizedMessage() + ": " + e.getMessage());
-        }
-    }*/
 
     @Override
     public void onLocationChanged(@NonNull Location location) {
@@ -147,14 +137,6 @@ public class ServiceAndroid extends Service implements LocationListener {
     public void onProviderDisabled(@NonNull String provider) {
         System.out.println("se desactivo el gps: " + provider);
     }
-
-
-    /*@RequiresApi(api = Build.VERSION_CODES.O)
-    public String getImei() {
-        TelephonyManager telephonyManager = (TelephonyManager) this.getSystemService(this.TELEPHONY_SERVICE);
-        String stringIMEI = telephonyManager.getImei();
-        return stringIMEI;
-    }*/
 
     public String getBateria(){
         IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
