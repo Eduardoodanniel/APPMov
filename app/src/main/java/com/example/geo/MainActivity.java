@@ -72,10 +72,6 @@ public class MainActivity extends AppCompatActivity implements Callback<Response
                 logeado = true;
                 Usuario user = new Usuario(username, password);
                 enviarLogin(user);
-                /*Intent home = new Intent(this,Home.class);
-                home.putExtra("logeado", true);
-                home.putExtra("idUsuario", idUsuario);
-                startActivity(home);*/
             }
         }
     }
@@ -87,9 +83,7 @@ public class MainActivity extends AppCompatActivity implements Callback<Response
                 logeado = false;
                 Usuario user = new Usuario(username.getText().toString(), password.getText().toString());
                 enviarLogin(user);
-                //Intent home = new Intent(this,Home.class);
-                //home.putExtra("idUsuario", 1L);
-                //startActivity(home);
+
             }else{
                 solicitarPermiso();
             }

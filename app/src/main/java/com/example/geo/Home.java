@@ -29,6 +29,7 @@ import android.widget.TextView;
 import com.example.geo.model.Telefono;
 import com.example.geo.serviceInterface.TelefonoService;
 import com.example.geo.utils.Api;
+import com.example.geo.utils.Imei;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -70,7 +71,7 @@ public class Home extends AppCompatActivity {
         logeado = getIntent().getExtras().getBoolean("logeado");
 
         //enviar datos del telefono
-        if (!logeado){
+        if (!logeado) {
             enviarDatosTelefono(getDatosTelefono());
         }
 
@@ -80,22 +81,22 @@ public class Home extends AppCompatActivity {
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private Telefono getDatosTelefono()
-    {
+    private Telefono getDatosTelefono() {
         Build build = new Build();
         Telefono telefono = new Telefono();
 
         telefono.setIdUsuario(idUsuario);
         telefono.setModelo(build.BRAND + " " + build.MODEL);
         telefono.setVersionAndroid(Build.VERSION.RELEASE);
-        telefono.setImei(getImei());
+        telefono.setImei(Imei.getIMEIDeviceId(this));
         telefono.setNoTelefono(getNumeroTelefonico());
         telefono.setRam(getRam());
         telefono.setAlmacenamientoTotal(String.valueOf(getMemoriaTotal()));
         return telefono;
     }
 
-    private void enviarDatosTelefono(Telefono telefono){
+    private void enviarDatosTelefono(Telefono telefono) {
+
         TelefonoService telefonoServiceI = Api.apiTelefono();
         Call<ResponseBody> call = telefonoServiceI.enviarDatosTelefono(telefono);
         call.enqueue(new Callback<ResponseBody>() {
@@ -105,7 +106,7 @@ public class Home extends AppCompatActivity {
                 int codigoEstado = response.code();
                 JSONObject respuestaJson;
 
-                if (response.isSuccessful()){
+                if (response.isSuccessful()) {
                     try {
                         respuestaJson = new JSONObject(response.body().string());
                         System.out.println(respuestaJson.get("mensajeAplication").toString() + " code: " + codigoEstado);
@@ -113,7 +114,7 @@ public class Home extends AppCompatActivity {
                     } catch (JSONException | IOException e) {
                         e.printStackTrace();
                     }
-                }else{
+                } else {
                     try {
                         respuestaJson = new JSONObject(response.errorBody().string());
                         System.out.println(respuestaJson.get("mensajeAplication").toString() + " code: " + codigoEstado);
@@ -126,29 +127,26 @@ public class Home extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                System.out.println( "exeption: "+t.getMessage());
+                System.out.println("exeption: " + t.getMessage());
             }
         });
     }
 
 
-    @SuppressLint("MissingPermission")
-    public String getNumeroTelefonico(){
-          TelephonyManager tMgr = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
+    //@SuppressLint("MissingPermission")
+    public String getNumeroTelefonico() {
+        TelephonyManager tMgr = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_NUMBERS) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            return null;
+        }
         return tMgr.getLine1Number();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public String getImei() {
-        TelephonyManager telephonyManager = (TelephonyManager) this.getSystemService(this.TELEPHONY_SERVICE);
-        String stringIMEI = telephonyManager.getImei();
-        return stringIMEI;
-    }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     public Long getMemoriaTotal() {
         StatFs stat = new StatFs(Environment.getExternalStorageDirectory().getPath());
-        // StatFs stat = new StatFs(path.getPath());
+         //StatFs stat = new StatFs(path.getPath());
         long blockSize = stat.getBlockSizeLong();
         long totalBlocks = stat.getBlockCountLong();
         return (totalBlocks * blockSize / (1024*1024));

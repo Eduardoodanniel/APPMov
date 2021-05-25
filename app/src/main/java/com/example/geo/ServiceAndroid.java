@@ -1,15 +1,18 @@
 package com.example.geo;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.BatteryManager;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
@@ -20,9 +23,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.core.app.ActivityCompat;
 
 import com.example.geo.model.Coordenada;
 import com.example.geo.model.enviarCoordenadas;
+import com.example.geo.utils.Imei;
 
 import java.io.File;
 
@@ -34,7 +39,7 @@ public class ServiceAndroid extends Service implements LocationListener {
     Coordenada coordenada;
     enviarCoordenadas enviarCoor;
 
-    public boolean gpsIsActivo(){
+    public boolean gpsIsActivo() {
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
     }
 
@@ -49,8 +54,8 @@ public class ServiceAndroid extends Service implements LocationListener {
 
         if (gpsIsActivo())
         {
-            try {
-                locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 29*60000, 0, this);
+            try {//29*60000
+                locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 3000, 0, this);
                 location = locationManager.getLastKnownLocation(locationManager.GPS_PROVIDER);
             } catch (Exception e) {
                 System.out.println("error al definir la variable location");
@@ -66,7 +71,7 @@ public class ServiceAndroid extends Service implements LocationListener {
         super.onCreate();
         coordenada  = new Coordenada();
         enviarCoor = new enviarCoordenadas();
-        coordenada.setImei(getImei());
+        coordenada.setImei(Imei.getIMEIDeviceId(this));
         iniciarLocation();
         System.out.println("se creo el servicio");
     }
@@ -90,10 +95,10 @@ public class ServiceAndroid extends Service implements LocationListener {
                     enviarCoor.eniviar(coordenada);
                 }else{
                     Toast.makeText(ct, "Avtiva tu GPS", Toast.LENGTH_SHORT).show();
-                }
-                handler.postDelayed(this,30*60000);//se ejecutara cada 30 minutos
+                }//30*60000
+                handler.postDelayed(this,4000);//se ejecutara cada 30 minutos
             }
-        }, 40000);//empezara a ejecutarse después 40 segundos
+        }, 5000);//empezara a ejecutarse después 40 segundos
         return START_STICKY;
     }
 
@@ -110,11 +115,27 @@ public class ServiceAndroid extends Service implements LocationListener {
     }
 
 
+    /*@Override
+    public void onLocationChanged(@NonNull Location location) {
+        try {
+            coordenada.setLatitud(location.getLatitude());
+            coordenada.setLongitud(location.getLongitude());
+        }catch (Exception e){
+            System.out.println("Changed: " + e.getLocalizedMessage() + ": " + e.getMessage());
+        }
+    }*/
+
     @Override
     public void onLocationChanged(@NonNull Location location) {
         coordenada.setLatitud(location.getLatitude());
         coordenada.setLongitud(location.getLongitude());
     }
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+        coordenada.setLatitud(location.getLatitude());
+        coordenada.setLongitud(location.getLongitude());
+    }
+
 
     @Override
     public void onProviderEnabled(@NonNull String provider) {
@@ -128,12 +149,12 @@ public class ServiceAndroid extends Service implements LocationListener {
     }
 
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    /*@RequiresApi(api = Build.VERSION_CODES.O)
     public String getImei() {
         TelephonyManager telephonyManager = (TelephonyManager) this.getSystemService(this.TELEPHONY_SERVICE);
         String stringIMEI = telephonyManager.getImei();
         return stringIMEI;
-    }
+    }*/
 
     public String getBateria(){
         IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
