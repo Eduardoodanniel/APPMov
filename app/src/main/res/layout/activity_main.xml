@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="#fff"
     tools:context=".MainActivity">
 
     <ImageView
@@ -37,13 +37,18 @@
         app:counterEnabled="true"
         app:counterMaxLength="16"
         app:counterTextColor="@color/black"
+        app:errorEnabled="true"
+        app:errorIconDrawable="@null"
         app:helperText="Campo obligatorio*"
         app:helperTextTextColor="@color/black"
         app:hintTextColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/idMensaje">
+        app:layout_constraintTop_toBottomOf="@+id/idMensaje"
+        app:passwordToggleTint="#FFFFFF"
+        app:startIconDrawable="@drawable/ic_usser"
+        app:startIconTint="@color/uno">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/txi_usu"
@@ -52,8 +57,11 @@
             android:hint="@string/usuario"
             android:inputType="text"
             android:maxLength="16"
-
-            android:textColor="@color/black" />
+            android:textColor="@color/black"
+            android:textColorHighlight="#000000"
+            android:textColorHint="@color/black"
+            android:textColorLink="#000000"
+            android:textCursorDrawable="@drawable/boton_inic_se" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -67,53 +75,69 @@
         android:layout_marginEnd="32dp"
         android:layout_marginRight="32dp"
         android:hint="@string/contraseña"
+        android:scrollbarThumbHorizontal="@drawable/boton_inic_se"
+        android:scrollbarThumbVertical="@drawable/boton_inic_se"
         android:textColorHint="@color/black"
         app:counterEnabled="true"
         app:counterMaxLength="18"
+        app:counterOverflowTextColor="@color/black"
         app:counterTextColor="@color/black"
+        app:endIconMode="password_toggle"
+        app:endIconTint="@color/black"
+        app:errorEnabled="true"
+        app:errorIconDrawable="@null"
         app:helperText="Campo obligatorio*"
         app:helperTextTextColor="@color/black"
         app:hintTextColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutusser">
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutusser"
+        app:startIconDrawable="@drawable/ic_password"
+        app:startIconTint="@color/uno">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/txi_pass"
+            android:id="@+id/txi_pass1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/contraseña"
             android:inputType="textPassword"
             android:maxLength="18"
-
-            android:textColor="@color/black" />
+            android:scrollbarThumbHorizontal="@drawable/boton_inic_se"
+            android:scrollbarThumbVertical="@drawable/boton_inic_se"
+            android:shadowColor="@color/black"
+            android:textColor="@color/black"
+            android:textColorHighlight="#000000"
+            android:textColorHint="@color/teal_200"
+            android:textColorLink="#000000"
+            android:textCursorDrawable="@drawable/boton_inic_se" />
 
     </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/idMensaje"
+        android:layout_width="281dp"
+        android:layout_height="53dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="36dp"
+        android:text="@string/mensaje"
+        android:textAlignment="center"
+        android:textColor="#C62828"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView2" />
 
     <Button
         android:id="@+id/btn_agregar"
         android:layout_width="160dp"
         android:layout_height="60dp"
         android:layout_marginTop="32dp"
-        android:background="@drawable/boton_inic_se"
+        android:background="@drawable/degradado"
         android:onClick="agregar"
         android:text="@string/Iniciar_sesion"
+        app:backgroundTint="#D84315"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textInputLayoutpassword" />
-
-    <TextView
-        android:id="@+id/idMensaje"
-        android:layout_width="157dp"
-        android:layout_height="32dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="36dp"
-        android:text="@string/mensaje"
-        android:textAlignment="center"
-        android:textColor="#780000"
-        android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView2" />
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutpassword" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -55,7 +55,7 @@ public class ServiceAndroid extends Service implements LocationListener {
         if (gpsIsActivo())
         {
             try {//29*60000
-                locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 29*60000, 0, this);
+                locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 3000, 0, this);
                 location = locationManager.getLastKnownLocation(locationManager.GPS_PROVIDER);
             } catch (Exception e) {
                 System.out.println("error al definir la variable location");

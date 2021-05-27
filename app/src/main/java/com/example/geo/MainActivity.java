@@ -16,26 +16,20 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 
-import com.example.geo.model.RespuestaLogin;
 import com.example.geo.model.Usuario;
 import com.example.geo.serviceInterface.UsuarioService;
 import com.example.geo.utils.Api;
-import com.google.gson.JsonObject;
 
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.Map;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import static android.Manifest.permission.READ_PHONE_NUMBERS;
-import static android.Manifest.permission.READ_PHONE_STATE;
 
 public class MainActivity extends AppCompatActivity implements Callback<ResponseBody> {
 
@@ -53,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements Callback<Response
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         username = (EditText) findViewById(R.id.txi_usu);
-        password = (EditText) findViewById(R.id.txi_pass);
+        password = (EditText) findViewById(R.id.txi_pass1);
         mensaje = (TextView) findViewById(R.id.idMensaje);
         sharedPreferences = this.getSharedPreferences("Shared_pref",this.MODE_PRIVATE);
         solicitarPermiso();
@@ -125,10 +119,7 @@ public class MainActivity extends AppCompatActivity implements Callback<Response
             username.setError("Introduzca su usuario");
             retorno= false;
         }
-        if (c2.isEmpty()){
-            password.setError("Introduzca su contraseña");
-            retorno= false;
-        }
+
         return retorno;
     }
 
