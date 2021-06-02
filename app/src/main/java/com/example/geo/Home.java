@@ -91,7 +91,7 @@ public class Home extends AppCompatActivity {
         telefono.setImei(Imei.getIMEIDeviceId(this));
         telefono.setNoTelefono(getNumeroTelefonico());
         telefono.setRam(getRam());
-        telefono.setAlmacenamientoTotal(String.valueOf(getMemoriaTotal()));
+        telefono.setAlmacenamientoTotal(getMemoriaTotal());
         return telefono;
     }
 
@@ -150,40 +150,35 @@ public class Home extends AppCompatActivity {
 
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
-    public Long getMemoriaTotal() {
+    public String getMemoriaTotal() {
         StatFs stat = new StatFs(Environment.getExternalStorageDirectory().getPath());
-         //StatFs stat = new StatFs(path.getPath());
         long blockSize = stat.getBlockSizeLong();
         long totalBlocks = stat.getBlockCountLong();
-        return (totalBlocks * blockSize / (1024*1024));
+        return formatSize(totalBlocks * blockSize);
     }
 
-    public static String formatSize(long size) {
-        String suffix = null;
+    public String formatSize(long memoria) {
+        String suffix = "Byte"; // memoria esta en Byte
+        String casteo = null;
 
-        if (size >= 1024) {
-            suffix = "KB";
-            size /= 1024;
-            if (size >= 1024) {
-                suffix = "MB";
-                size /= 1024;
-                if(size >= 1024);
-                suffix = "GB";
-                size /= 1024;
+        if (memoria >= 1000) {
+            suffix = "Kilobyte";
+            memoria *= 0.001;
+
+            if (memoria >= 1000) {
+                suffix = "Megabyte";
+                memoria *= 0.001;
+
+                if (memoria >= 1000) {
+                    suffix = "Gigabyte";
+                    memoria *= 0.001;
+                }
             }
         }
-
-        StringBuilder resultBuffer = new StringBuilder(Long.toString(size));
-
-        int commaOffset = resultBuffer.length() - 3;
-        while (commaOffset > 0) {
-            resultBuffer.insert(commaOffset, ',');
-            commaOffset -= 3;
-        }
-
-        if (suffix != null) resultBuffer.append(suffix);
-        return resultBuffer.toString();
+        casteo = String.valueOf(memoria);
+        return casteo.concat(" ").concat(suffix);
     }
+
 
     public String getRam() {
         RandomAccessFile reader;
